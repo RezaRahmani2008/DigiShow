@@ -7,6 +7,10 @@ android {
     namespace 'com.example.digishow'
     compileSdk 34
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.example.digishow"
         minSdk 24
@@ -46,6 +50,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     // swipe refresh 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    // show chart
+    implementation 'com.robinhood.spark:spark:1.2.0'
 
 
 }

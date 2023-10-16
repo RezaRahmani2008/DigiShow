@@ -8,4 +8,21 @@
     <string name="period_1year">1Y</string>
     <string name="period_all">ALL</string>
     <string name="more">More</string>
+    <string name="about">About</string>
+    <string name="website">Website</string>
+    <string name="twitter">Twitter</string>
+    <string name="reddit">Reddit</string>
+    <string name="github">Github</string>
+    <string name="n_a">N/A</string>
+    <string name="some_data">Some Data</string>
+    <string name="some_error">Some Error</string>
+    <string name="statistics">Statistics</string>
+    <string name="open">Open</string>
+    <string name="today_s_high">Today\'s High</string>
+    <string name="today_s_low">Today\'s Low</string>
+    <string name="change_today_s">Change today\'s</string>
+    <string name="volume">Volume</string>
+    <string name="average_volume">Average Volume</string>
+    <string name="market_cap">Market Cap</string>
+    <string name="supply">Supply</string>
 </resources>
