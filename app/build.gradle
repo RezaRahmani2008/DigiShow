@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -52,6 +53,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     // show chart
     implementation 'com.robinhood.spark:spark:1.2.0'
-
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
 
 }
