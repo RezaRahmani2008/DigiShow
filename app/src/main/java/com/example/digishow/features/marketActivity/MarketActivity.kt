@@ -10,22 +10,25 @@ import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.digishow.apiManager.ApiManager
+import com.example.digishow.apiManager.model.CoinAboutData
+import com.example.digishow.apiManager.model.CoinAboutItem
 import com.example.digishow.apiManager.model.CoinsData
 import com.example.digishow.databinding.ActivityMarketBinding
-import com.example.digishow.features.CoinActivity
-
+import com.example.digishow.features.coinActivity.CoinActivity
+import com.google.gson.Gson
 
 class MarketActivity : AppCompatActivity(), MarketAdapter.RecyclerCallback {
-    lateinit var binding: ActivityMarketBinding
-    val apiManager = ApiManager()
-    lateinit var adapter :MarketAdapter
+    lateinit var aboutDataMap: MutableMap<String, CoinAboutItem>
     lateinit var dataNews: ArrayList<Pair<String, String>>
+    lateinit var binding: ActivityMarketBinding
+    lateinit var adapter: MarketAdapter
+    val apiManager = ApiManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMarketBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.layoutToolbar.toolbar.title = "DigiShow"
+        binding.layoutToolbar.toolbar.title = "Market"
 
         binding.layoutWatchlist.btnShowMore.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.livecoinwatch.com/"))
@@ -39,35 +42,22 @@ class MarketActivity : AppCompatActivity(), MarketAdapter.RecyclerCallback {
             Handler(Looper.getMainLooper()).postDelayed({
                 binding.swipeRefreshMain.isRefreshing = false
             }, 1500)
-
         }
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        initUi()
+        getAboutDataFromAsset()
     }
 
     override fun onResume() {
         super.onResume()
-
         initUi()
-
     }
 
     private fun initUi() {
-
         getNewsFromApi()
         getTopCoinsFromApi()
-
     }
 
     private fun getNewsFromApi() {
-
         apiManager.getNews(object : ApiManager.ApiCallback<ArrayList<Pair<String, String>>> {
-
             override fun onSuccess(data: ArrayList<Pair<String, String>>) {
                 dataNews = data
                 refreshNews()
@@ -77,13 +67,10 @@ class MarketActivity : AppCompatActivity(), MarketAdapter.RecyclerCallback {
                 Toast.makeText(this@MarketActivity, "error => " + errorMessage, Toast.LENGTH_SHORT)
                     .show()
             }
-
         })
-
     }
 
     private fun refreshNews() {
-
         val randomAccess = (0..49).random()
         binding.layoutNews.txtNews.text = dataNews[randomAccess].first
         binding.layoutNews.imgNews.setOnClickListener {
@@ -93,16 +80,12 @@ class MarketActivity : AppCompatActivity(), MarketAdapter.RecyclerCallback {
         binding.layoutNews.txtNews.setOnClickListener {
             refreshNews()
         }
-
     }
 
     private fun getTopCoinsFromApi() {
-
         apiManager.getCoinsList(object : ApiManager.ApiCallback<List<CoinsData.Data>> {
             override fun onSuccess(data: List<CoinsData.Data>) {
-
                 showDataInRecycler(data)
-
             }
 
             override fun onError(errorMessage: String) {
@@ -111,22 +94,42 @@ class MarketActivity : AppCompatActivity(), MarketAdapter.RecyclerCallback {
                 Log.v("testLog", errorMessage)
             }
         })
-
     }
 
     private fun showDataInRecycler(data: List<CoinsData.Data>) {
-
         adapter = MarketAdapter(ArrayList(data), this)
         binding.layoutWatchlist.recyclerMain.adapter = adapter
         binding.layoutWatchlist.recyclerMain.layoutManager = LinearLayoutManager(this)
-
     }
 
     override fun onCoinItemClicked(dataCoin: CoinsData.Data) {
         val intent = Intent(this, CoinActivity::class.java)
-        intent.putExtra("dataToSend", dataCoin)
+        dataCoin
+        aboutDataMap[dataCoin.coinInfo.name]!!
+        val bundle = Bundle()
+        bundle.putParcelable("bundle1", dataCoin)
+        bundle.putParcelable("bundle2", aboutDataMap[dataCoin.coinInfo.name]!!)
+
+        intent.putExtra("bundle", bundle)
         startActivity(intent)
     }
 
-
+    private fun getAboutDataFromAsset() {
+        val fileInString = applicationContext.assets
+            .open("currencyinfo.json")
+            .bufferedReader()
+            .use { it.readText() }
+        aboutDataMap = mutableMapOf<String, CoinAboutItem>()
+        val gson = Gson()
+        val dataAboutAll = gson.fromJson(fileInString, CoinAboutData::class.java)
+        dataAboutAll.forEach {
+            aboutDataMap[it.currencyName] = CoinAboutItem(
+                it.info.web,
+                it.info.github,
+                it.info.twt,
+                it.info.desc,
+                it.info.reddit
+            )
+        }
+    }
 }

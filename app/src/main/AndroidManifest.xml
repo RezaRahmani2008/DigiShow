@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.digishow.features.CoinActivity"
+            android:name="com.example.digishow.features.coinActivity.CoinActivity"
             android:exported="false"/>
     </application>
 
